@@ -1,3 +1,7 @@
+"use client"
+
+import Link from "next/link"
+import { UsersRound, LogOut, ChevronUp } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -7,47 +11,70 @@ import {
   SidebarMenuItem,
   SidebarMenu,
   SidebarMenuButton,
-  
-
 } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-  
 } from "@/components/ui/dropdown-menu"
-
-
-
-
+import Image from "next/image"
 
 export function AppSidebar() {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+    } finally {
+      window.location.href = "/"
+    }
+  }
+
   return (
-  <Sidebar>
-  <SidebarHeader>
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton>
-              Select Workspace
-          
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-            <DropdownMenuItem>
-              <span>Acme Inc</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  </SidebarHeader>
-</Sidebar>
+    <Sidebar className="bg-slate-[#0B0F19] text-white border-r border-slate-800">
+      <SidebarHeader className="h-16 border-b flex items-center justify-center px-4">
+        <Image
+          src="/img/google.jpg"
+          alt="Logo"
+          width={120}
+          height={40}
+          className="object-contain"
+        />
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="text-foreground hover:bg-black hover:text-white active:bg-black/80 transition-all duration-300"
+              >
+                <Link href="/admin/">
+                  <UsersRound className="w-4 h-4 mr-2" />
+                  <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                className="text-foreground hover:bg-black hover:text-white active:bg-black/80 transition-all duration-300"
+              >
+                <Link href="/admin/user-management">
+                  <UsersRound className="w-4 h-4 mr-2" />
+                  <span>usermanagement</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t p-2">
+     
+       
+      </SidebarFooter>
+    </Sidebar>
   )
 }
