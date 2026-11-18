@@ -30,7 +30,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="bg-slate-[#0B0F19] text-white border-r border-slate-800">
+    <Sidebar className="bg-slate-[#100130] text-white border-r border-slate-800">
       <SidebarHeader className="h-16 border-b flex items-center justify-center px-4">
         <Image
           src="/img/google.jpg"
