@@ -33,7 +33,7 @@ export function AppSidebar() {
     <Sidebar className="bg-slate-[#100130] text-white border-r border-slate-800">
       <SidebarHeader className="h-16 border-b flex items-center justify-center px-4">
         <Image
-          src="/img/google.jpg"
+          src="/img/cola.jpg"
           alt="Logo"
           width={120}
           height={40}

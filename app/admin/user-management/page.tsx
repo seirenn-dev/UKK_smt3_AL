@@ -1,5 +1,5 @@
 'use client'
- 
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Pencil, Plus, Trash2 } from "lucide-react"
@@ -22,18 +22,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
- 
+
 type ManagedUser = {
     id: number
+    kodeUser?: string | null
     fullname: string
     email: string
     role: string
     hasToken: boolean
     createdAt: string
 }
- 
+
 const PAGE_SIZE = 10
- 
+
 export default function UserManagementPage() {
     const router = useRouter()
     const [users, setUsers] = useState<ManagedUser[]>([])
@@ -41,7 +42,7 @@ export default function UserManagementPage() {
     const [totalUsers, setTotalUsers] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState("")
- 
+
     async function loadUsers(page = currentPage) {
         setIsLoading(true)
         setError("")
@@ -58,7 +59,7 @@ export default function UserManagementPage() {
             setIsLoading(false)
         }
     }
- 
+
     useEffect(() => {
         let isActive = true
 
@@ -86,12 +87,12 @@ export default function UserManagementPage() {
             isActive = false
         }
     }, [])
- 
+
     function goToPage(page: number) {
         setCurrentPage(page)
         void loadUsers(page)
     }
- 
+
     async function deleteUser(user: ManagedUser) {
         if (!window.confirm(`Hapus user ${user.fullname}?`)) return
         setError("")
@@ -108,9 +109,9 @@ export default function UserManagementPage() {
             setError(deleteError instanceof Error ? deleteError.message : "Gagal menghapus user.")
         }
     }
- 
+
     const totalPages = Math.max(1, Math.ceil(totalUsers / PAGE_SIZE))
- 
+
     return (
         <Card className="m-6 px-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -123,14 +124,15 @@ export default function UserManagementPage() {
                     Tambah user
                 </Button>
             </div>
- 
+
             {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
- 
+
             <div className="mt-5 overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>ID</TableHead>
+                            <TableHead>Kode User</TableHead>
                             <TableHead>Nama lengkap</TableHead>
                             <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
@@ -141,12 +143,13 @@ export default function UserManagementPage() {
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
-                            <TableRow><TableCell colSpan={7} className="text-center">Memuat user...</TableCell></TableRow>
+                            <TableRow><TableCell colSpan={8} className="text-center">Memuat user...</TableCell></TableRow>
                         ) : users.length === 0 ? (
-                            <TableRow><TableCell colSpan={7} className="text-center">Belum ada user.</TableCell></TableRow>
+                            <TableRow><TableCell colSpan={8} className="text-center">Belum ada user.</TableCell></TableRow>
                         ) : users.map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
+                                <TableCell className="font-mono">{user.kodeUser ?? "-"}</TableCell>
                                 <TableCell className="font-medium">{user.fullname}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell className="capitalize">{user.role}</TableCell>
@@ -181,7 +184,7 @@ export default function UserManagementPage() {
                     </TableBody>
                 </Table>
             </div>
- 
+
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                 <Pagination>
                     <PaginationContent>
@@ -232,7 +235,7 @@ export default function UserManagementPage() {
         </Card>
     )
 }
- 
+
 function getPageItems(currentPage: number, totalPages: number): Array<number | "ellipsis"> {
     if (totalPages <= 4) {
         return Array.from({ length: totalPages }, (_, index) => index + 1)

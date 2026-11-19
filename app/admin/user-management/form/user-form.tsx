@@ -1,46 +1,79 @@
 'use client'
- 
+
 import { useEffect, useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
- 
+
 type UserFormUser = {
   id: number
+  kodeUser?: string | null
   fullname: string
   email: string
   role: string
 }
- 
+
 type UserFormProps = {
   userId?: string
 }
- 
+
 export function UserForm({ userId }: UserFormProps) {
   const router = useRouter()
   const [user, setUser] = useState<UserFormUser | null>(null)
   const [isLoading, setIsLoading] = useState(Boolean(userId))
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
+  const [kodeUser, setKodeUser] = useState("")
   const [fullname, setFullname] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [role, setRole] = useState("staff")
- 
+
+  // Mode Tambah: ambil ulang nomor otomatis setiap kali role diubah
+  useEffect(() => {
+    if (userId) return
+
+    let isActive = true
+    setKodeUser("Memuat...")
+
+    async function loadNextCode() {
+      try {
+       const response = await fetch(`/api/users?nextCodeRole=${encodeURIComponent(role)}`)
+        const result = await response.json()
+        if (response.ok && isActive) {
+          setKodeUser(result.nextCode ?? "Otomatis")
+        } else if (isActive) {
+          setKodeUser("Otomatis saat disimpan")
+        }
+      } catch {
+        if (isActive) {
+          setKodeUser("Otomatis saat disimpan")
+        }
+      }
+    }
+
+    void loadNextCode()
+    return () => {
+      isActive = false
+    }
+  }, [userId, role])
+
+  // Mode Edit: muat data user lama sekali saat halaman dibuka
   useEffect(() => {
     if (!userId) return
- 
+
     let isActive = true
     async function loadUser() {
       try {
         const response = await fetch(`/api/users/${userId}`)
         const result = await response.json()
         if (!response.ok) throw new Error(result.error ?? "Gagal memuat user.")
- 
+
         if (isActive) {
           setUser(result.user)
+          setKodeUser(result.user.kodeUser ?? "-")
           setFullname(result.user.fullname)
           setEmail(result.user.email)
           setRole(result.user.role)
@@ -53,13 +86,13 @@ export function UserForm({ userId }: UserFormProps) {
         if (isActive) setIsLoading(false)
       }
     }
- 
+
     void loadUser()
     return () => {
       isActive = false
     }
   }, [userId])
- 
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsSaving(true)
@@ -84,7 +117,7 @@ export function UserForm({ userId }: UserFormProps) {
       setIsSaving(false)
     }
   }
- 
+
   return (
     <Card className="m-6 px-4">
       <div className="flex items-center justify-between gap-3">
@@ -94,12 +127,22 @@ export function UserForm({ userId }: UserFormProps) {
           Kembali
         </Button>
       </div>
- 
+
       {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
       {isLoading ? (
         <p className="mt-5 text-sm text-muted-foreground">Memuat user...</p>
       ) : userId && !user ? null : (
         <form onSubmit={handleSubmit} className="mt-5 grid gap-4 rounded-md border p-4 sm:grid-cols-2">
+          <div className="grid gap-1.5 sm:col-span-2">
+            <label htmlFor="kodeUser" className="text-sm font-medium">Kode user</label>
+            <Input
+              id="kodeUser"
+              value={kodeUser || "Memuat..."}
+              readOnly
+              className="bg-muted cursor-not-allowed"
+            />
+          </div>
+
           <div className="grid gap-1.5">
             <label htmlFor="fullname" className="text-sm font-medium">Nama lengkap</label>
             <Input id="fullname" value={fullname} onChange={(event) => setFullname(event.target.value)} required maxLength={191} />
