@@ -245,4 +245,4 @@ function getPageItems(currentPage: number, totalPages: number): Array<number | "
         return ["ellipsis", totalPages - 2, totalPages - 1, totalPages]
     }
     return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis"]
-}
+}   ``

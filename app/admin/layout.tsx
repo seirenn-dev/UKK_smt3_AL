@@ -1,8 +1,9 @@
-"use client";
-
 import * as React from "react"
 import Link from "next/link"
+import { redirect } from "next/navigation"
+import { getAuthenticatedUser } from "@/lib/auth"
 import { AppSidebar } from "../component/app-sidebar"
+import { LogoutMenuItem } from "./logout-menu-item"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -15,24 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const [isLoggingOut, setIsLoggingOut] = React.useState(false)
+async function AdminShell({ children }: { children: React.ReactNode }) {
+  const user = await getAuthenticatedUser()
 
-  const handleLogout = async () => {
-    if (isLoggingOut) return
-    setIsLoggingOut(true)
-
-    try {
-      // Pastikan path API ini sesuai dengan folder di app/api/ (misal "/api/auth/logout" atau "/api/logout")
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      })
-    } catch (error) {
-      console.error("Logout error:", error)
-    } finally {
-      document.body.style.pointerEvents = ""
-      window.location.href = "/"
-    }
+  if (!user) {
+    redirect("/")
   }
 
   return (
@@ -73,16 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem
-                  disabled={isLoggingOut}
-                  onSelect={(e) => {
-                    e.preventDefault()
-                    handleLogout()
-                  }}
-                  className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400 cursor-pointer"
-                >
-                  {isLoggingOut ? "Logging out..." : "Log out"}
-                </DropdownMenuItem>
+                <LogoutMenuItem />
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -93,5 +72,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </main>
       </SidebarInset>
     </SidebarProvider>
+  )
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <React.Suspense fallback={null}>
+      <AdminShell>{children}</AdminShell>
+    </React.Suspense>
   )
 }

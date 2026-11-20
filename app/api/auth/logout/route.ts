@@ -2,13 +2,13 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { verifyUserJwt } from "@/lib/user-security"
- 
+
 export async function POST() {
   const token = (await cookies()).get("auth_token")?.value
   if (token) {
     const payload = verifyUserJwt(token)
     const userId = payload ? Number(payload.sub) : NaN
- 
+
     if (Number.isSafeInteger(userId) && userId > 0) {
       try {
         await prisma.user.updateMany({
@@ -20,7 +20,7 @@ export async function POST() {
       }
     }
   }
- 
+
   const response = NextResponse.json({ success: true })
   response.cookies.set("auth_token", "", {
     httpOnly: true,

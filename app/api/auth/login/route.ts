@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { createUserJwt, verifyUserPassword } from "@/lib/user-security"
- 
+
 export async function POST(request: Request) {
   let body: Record<string, unknown>
   try {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Format request tidak valid." }, { status: 400 })
   }
- 
+
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : ""
   const password = typeof body.password === "string" ? body.password : ""
   if (!email || !password) {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   if (!process.env.JWT_SECRET) {
     return NextResponse.json({ error: "Konfigurasi login belum lengkap." }, { status: 500 })
   }
- 
+
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -34,17 +34,17 @@ export async function POST(request: Request) {
         password: true,
       },
     })
- 
+
     if (!user || !(await verifyUserPassword(password, user.password))) {
       return NextResponse.json({ error: "Email atau password salah." }, { status: 401 })
     }
- 
+
     const token = createUserJwt(user)
     await prisma.user.update({
       where: { id: user.id },
       data: { token },
     })
- 
+
     const response = NextResponse.json({
       user: {
         id: user.id,

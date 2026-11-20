@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useRef, useState } from "react"
 import { LogOut } from "lucide-react"
@@ -14,7 +14,6 @@ export function LogoutMenuItem() {
     setIsLoggingOut(true)
 
     try {
-      // Pastikan path ini sama dengan lokasi folder file route.ts logout kamu
       await fetch("/api/auth/logout", {
         method: "POST",
         keepalive: true,
@@ -28,7 +27,8 @@ export function LogoutMenuItem() {
     <DropdownMenuItem
       variant="destructive"
       disabled={isLoggingOut}
-      onClick={() => {
+      onSelect={(e) => {
+        e.preventDefault()
         void logout()
       }}
     >
