@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { UsersRound, LogOut, ChevronUp } from "lucide-react"
+import { UsersRound, LogOut, ChevronUp, SquareCheckBig, Cat, Lighthouse } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -50,7 +50,7 @@ export function AppSidebar() {
                 className="text-foreground hover:bg-black hover:text-white active:bg-black/80 transition-all duration-300"
               >
                 <Link href="/admin/">
-                  <UsersRound className="w-4 h-4 mr-2" />
+                  <Lighthouse className="w-4 h-4 mr-2" />
                   <span>Dashboard</span>
                 </Link>
               </SidebarMenuButton>
@@ -67,6 +67,32 @@ export function AppSidebar() {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
+
+            <SidebarMenuItem>
+            <SidebarMenuButton
+           asChild
+             className="text-foreground hover:bg-black hover:text-white active:bg-black/80 transition-all duration-300"
+          >
+    <Link href="/admin/tes">
+      <SquareCheckBig className="w-4 h-4 mr-2" />
+      <span>tes</span>
+    </Link>
+  </SidebarMenuButton>
+</SidebarMenuItem>
+
+
+            <SidebarMenuItem>
+            <SidebarMenuButton
+           asChild
+             className="text-foreground hover:bg-black hover:text-white active:bg-black/80 transition-all duration-300"
+          >
+    <Link href="/admin/facility">
+      <Cat className="w-4 h-4 mr-2" />
+      <span>facility</span>
+    </Link>
+  </SidebarMenuButton>
+</SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
